@@ -9,6 +9,18 @@ options = Options()
 options.add_argument("--headless")
 browser = webdriver.Chrome(chrome_options=options)
 
+def infos_escola(nome_da_escola, link_da_escola, browser):
+    base = "http://escolas.educacao.ba.gov.br"
+    print(base+link_da_escola)
+    browser.get(base+link_da_escola)
+    pagina_escola = BS(browser.page_source, 'html5lib')
+    pagina_escola_content = pagina_escola.find('div', class_='transparencia-novo').iframe['src']
+    browser.get(pagina_escola_content)
+    pagina_iframe = BS(browser.page_source, 'html5lib')
+    print(pagina_iframe.table)
+
+
+
 def get_escolas(browser, i):
     page = "http://escolas.educacao.ba.gov.br/escolas?tipo=next&page={}".format(i)
     browser.get(page)
@@ -18,11 +30,14 @@ def get_escolas(browser, i):
     escolas = content.find_all('span', class_='field-content')
     for escola in escolas:
         if escola.a != None:
-            print(escola.a)
-            print("")
-    nome_da_escola = ''
-    link_da_escola = ''
-    
+            # print(escola.a['href'])
+            # print(escola.a.text)
+            link_da_escola = escola.a['href']
+            nome_da_escola = escola.a.text
+
+            infos_escola(nome_da_escola, link_da_escola, browser)
+
+
 for i in range(0, 71):
     links_escolas = get_escolas(browser, i)
     
