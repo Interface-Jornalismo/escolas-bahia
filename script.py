@@ -7,10 +7,15 @@ from selenium.webdriver.chrome.options import Options
 
 options = Options()
 options.add_argument("--headless")
-
-pagina_inicial = "http://escolas.educacao.ba.gov.br/escolas"
-
 browser = webdriver.Chrome(chrome_options=options)
-browser.get(pagina_inicial)
-browser.save_screenshot('screenshot.png')
 
+def get_escolas(browser, i):
+    page = "http://escolas.educacao.ba.gov.br/escolas?tipo=next&page={}".format(i)
+    browser.get(page)
+    escolas = browser.find_elements_by_class_name('.views-row')
+
+    escola_links = escolas.find_elements_by_tag_name('a')
+
+for i in range(0, 71):
+    get_escolas(browser, i)
+    
