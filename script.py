@@ -12,10 +12,17 @@ browser = webdriver.Chrome(chrome_options=options)
 def get_escolas(browser, i):
     page = "http://escolas.educacao.ba.gov.br/escolas?tipo=next&page={}".format(i)
     browser.get(page)
-    escolas = browser.find_elements_by_class_name('.views-row')
 
-    escola_links = escolas.find_elements_by_tag_name('a')
-
+    source = BS(browser.page_source, 'html5lib')
+    content = source.find('div', class_='views_view__Escolas')
+    escolas = content.find_all('span', class_='field-content')
+    for escola in escolas:
+        if escola.a != None:
+            print(escola.a)
+            print("")
+    nome_da_escola = ''
+    link_da_escola = ''
+    
 for i in range(0, 71):
-    get_escolas(browser, i)
+    links_escolas = get_escolas(browser, i)
     
