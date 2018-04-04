@@ -20,9 +20,10 @@ def infos_escola(nome_da_escola, link_da_escola, browser):
 
     campos = ["SALDO INICIAL TOTAL", "SALDO INICIAL PARA FUNCIONAMENTO DA UNIDADE ESCOLAR", "TOTAL DE RECURSOS RECEBIDOS PARA FUNCIONAMENTO DA UNIDADE ESCOLAR","TOTAL INVESTIDO PARA FUNCIONAMENTO DA UNIDADE ESCOLAR", "SALDO DISPONÍVEL PARA FUNCIONAMENTO DA UNIDADE ESCOLAR","SALDO INICIAL PARA ALIMENTAÇÃO ESCOLAR", "TOTAL DE RECURSOS RECEBIDOS PARA ALIMENTAÇÃO ESCOLAR", "TOTAL INVESTIDO PARA ALIMENTAÇÃO ESCOLAR", "SALDO DISPONÍVEL PARA ALIMENTAÇÃO ESCOLAR", "TOTAL DE RECURSOS RECEBIDOS NO ANO EM EXERCÍCIO", "TOTAL INVESTIDO PARA FUNCIONAMENTO DA UNIDADE ESCOLAR", "SALDO DISPONÍVEL PARA FUNCIONAMENTO DA UNIDADE ESCOLAR","SALDO INICIAL PARA ALIMENTAÇÃO ESCOLAR", "TOTAL DE RECURSOS RECEBIDOS PARA ALIMENTAÇÃO ESCOLAR", "TOTAL INVESTIDO PARA ALIMENTAÇÃO ESCOLAR", "SALDO DISPONÍVEL PARA ALIMENTAÇÃO ESCOLAR", "TOTAL DE RECURSOS RECEBIDOS NO ANO EM EXERCÍCIO", "RECEITA TOTAL NO ANO EM EXERCÍCIO", "INVESTIMENTO TOTAL NO ANO EM EXERCÍCIO", "SALDO DISPONÍVEL NO ANO EM EXERCÍCIO"]    
 
-    for item in campos:
-        tr = pagina_iframe.find_all(text=re.compile(item))
-        print(tr)
+    
+    tr = pagina_iframe.find_all(text=re.compile('R\$'))
+    for i in tr:
+        print(i.parent.parent)
 
 def get_escolas(browser, i):
     page = "http://escolas.educacao.ba.gov.br/escolas?tipo=next&page={}".format(i)
@@ -38,5 +39,6 @@ def get_escolas(browser, i):
             infos_escola(nome_da_escola, link_da_escola, browser)
 
 
-for i in range(0, 71):
-    links_escolas = get_escolas(browser, i) 
+# for i in range(0, 71):
+    # links_escolas = get_escolas(browser, i) 
+links_escolas = get_escolas(browser, 1) 
