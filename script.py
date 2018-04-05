@@ -10,20 +10,31 @@ options = Options()
 options.add_argument("--headless")
 browser = webdriver.Chrome(chrome_options=options)
 
-def infos_escola(nome_da_escola, link_da_escola, browser):
+def infos_escola(link_da_escola, browser):
     base = "http://escolas.educacao.ba.gov.br"
     browser.get(base+link_da_escola)
     pagina_escola = BS(browser.page_source, 'html5lib')
+
+    #Infos da escola
+    escola_dict = {}
+    escola_infos = pagina_escola.find('div', class_='escola-node-infos-col1')
+    escola_dict['nome_da_escola'] = pagina_escola.find('div', class_='escola-node-title').text
+    escola_dict['bairro'] = escola_infos.find(text=re.compile('Bairro:')).parent.next_sibling
+    escola_dict['codigo_sec'] = escola_infos.find(text=re.compile('Sec:')).parent.next_sibling    
+    escola_dict['municipio'] = escola_infos.find(text=re.compile('Município:')).parent.next_sibling
+
+    print(escola_dict)
+    
+    #Acessa iframe da escola
     pagina_escola_content = pagina_escola.find('div', class_='transparencia-novo').iframe['src']
     browser.get(pagina_escola_content)
     pagina_iframe = BS(browser.page_source, 'html5lib')
-
-    campos = ["SALDO INICIAL TOTAL", "SALDO INICIAL PARA FUNCIONAMENTO DA UNIDADE ESCOLAR", "TOTAL DE RECURSOS RECEBIDOS PARA FUNCIONAMENTO DA UNIDADE ESCOLAR","TOTAL INVESTIDO PARA FUNCIONAMENTO DA UNIDADE ESCOLAR", "SALDO DISPONÍVEL PARA FUNCIONAMENTO DA UNIDADE ESCOLAR","SALDO INICIAL PARA ALIMENTAÇÃO ESCOLAR", "TOTAL DE RECURSOS RECEBIDOS PARA ALIMENTAÇÃO ESCOLAR", "TOTAL INVESTIDO PARA ALIMENTAÇÃO ESCOLAR", "SALDO DISPONÍVEL PARA ALIMENTAÇÃO ESCOLAR", "TOTAL DE RECURSOS RECEBIDOS NO ANO EM EXERCÍCIO", "TOTAL INVESTIDO PARA FUNCIONAMENTO DA UNIDADE ESCOLAR", "SALDO DISPONÍVEL PARA FUNCIONAMENTO DA UNIDADE ESCOLAR","SALDO INICIAL PARA ALIMENTAÇÃO ESCOLAR", "TOTAL DE RECURSOS RECEBIDOS PARA ALIMENTAÇÃO ESCOLAR", "TOTAL INVESTIDO PARA ALIMENTAÇÃO ESCOLAR", "SALDO DISPONÍVEL PARA ALIMENTAÇÃO ESCOLAR", "TOTAL DE RECURSOS RECEBIDOS NO ANO EM EXERCÍCIO", "RECEITA TOTAL NO ANO EM EXERCÍCIO", "INVESTIMENTO TOTAL NO ANO EM EXERCÍCIO", "SALDO DISPONÍVEL NO ANO EM EXERCÍCIO"]    
-
     
+    #Acha todos os elementos com dinheiro
     tr = pagina_iframe.find_all(text=re.compile('R\$'))
     for i in tr:
-        print(i.parent.parent)
+        if i.parent.name != 'td':
+            print(i.parent.parent)
 
 def get_escolas(browser, i):
     page = "http://escolas.educacao.ba.gov.br/escolas?tipo=next&page={}".format(i)
@@ -35,8 +46,8 @@ def get_escolas(browser, i):
     for escola in escolas:
         if escola.a != None:
             link_da_escola = escola.a['href']
-            nome_da_escola = escola.a.text
-            infos_escola(nome_da_escola, link_da_escola, browser)
+            infos_escola(link_da_escola, browser)
+            exit()
 
 
 # for i in range(0, 71):
